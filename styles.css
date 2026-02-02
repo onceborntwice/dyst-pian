@@ -1,0 +1,279 @@
+:root {
+  --bg: #050b08;
+  --fg: #e8e6ef;
+  --muted: rgba(232, 230, 239, 0.65);
+  /* --line: rgba(232, 230, 239, 0.12); */
+  --accent: rgba(80, 200, 140, 0.85);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: radial-gradient(1200px 600px at 50% 20%, rgba(40, 120, 80, 0.20), transparent 60%),
+              radial-gradient(900px 500px at 20% 70%, rgba(20, 90, 60, 0.18), transparent 55%),
+              var(--bg);
+  color: var(--fg);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  overflow: hidden;
+}
+
+.scene {
+  position: fixed;
+  inset: 0;
+  display: none;
+}
+.scene.is-active { display: grid; }
+
+/* ===== LORE SCENE ===== */
+.scene--lore {
+  place-items: center;
+  padding: 24px;
+}
+
+.lore {
+  width: min(900px, 92vw);
+  display: grid;
+  gap: 22px;
+  align-items: center;
+  justify-items: start;
+  text-align: left;
+}
+
+.lore__line {
+  min-height: 28px;
+  font-size: clamp(16px, 2vw, 20px);
+  letter-spacing: 0.2px;
+  line-height: 1.5;
+  color: var(--fg);
+  opacity: 1;
+  transition: opacity 600ms ease, filter 600ms ease;
+}
+
+.lore__line.is-fading {
+  opacity: 0;
+  filter: blur(2px);
+}
+
+.cursor {
+  display: inline-block;
+  width: 10px;
+  opacity: 0.9;
+  animation: blink 1s steps(1) infinite;
+  color: var(--accent);
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ===== RELIC BUTTON ===== */
+.relic {
+  display: grid;
+  /* grid-template-columns: 180px 1fr; */
+  align-items: center;
+  justify-items: center;
+  justify-self: center;
+  position: relative;
+  gap: 12px;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transform: translateY(8px);
+  opacity: 0;
+  transition: opacity 700ms ease, transform 700ms ease;
+}
+
+.relic.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.relic:hover {
+  border-color: transparent;
+}
+
+.relic__img {
+  width: 480px;
+  height: 480px;
+  object-fit: contain;
+  filter: drop-shadow(0 22px 40px rgba(0,0,0,0.55));
+}
+
+
+.relic__hint {
+  color: var(--muted);
+  font-size: 14px;
+  letter-spacing: 0.6px;
+  text-transform: lowercase;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 420ms ease, transform 420ms ease;
+  transition-delay: 0ms;
+}
+
+.relic.is-visible .relic__hint {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 260ms;
+}
+
+/* ===== SCREEN SCENE ===== */
+.scene--screen {
+  place-items: center;
+  background: #000;
+}
+
+.screen {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.screen__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  filter: saturate(0.9) brightness(0.75);
+}
+
+.screen__canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  opacity: 0.45;
+}
+
+/* HUD controls bottom */
+.hud {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 220px 1fr 220px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(10px);
+}
+
+.hud__left, .hud__right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.hud__mid {
+  text-align: center;
+}
+
+.track {
+  font-size: 12px;
+  color: rgba(255,255,255,0.70);
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.hud__btn {
+  height: 40px;
+  min-width: 44px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+.hud__btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(80,200,140,0.30);
+}
+
+.vol {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.vol__label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 1px;
+}
+
+input[type="range"] {
+  width: 140px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(22, 80, 55, 0.9), rgba(40, 130, 90, 0.95), rgba(12, 50, 35, 0.9));
+  box-shadow: inset 0 0 0 1px rgba(120, 220, 170, 0.12);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(180, 255, 220, 0.9), rgba(60, 180, 120, 0.95));
+  border: 1px solid rgba(20, 90, 60, 0.9);
+  box-shadow: 0 0 8px rgba(80, 200, 140, 0.35);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(22, 80, 55, 0.9), rgba(40, 130, 90, 0.95), rgba(12, 50, 35, 0.9));
+  box-shadow: inset 0 0 0 1px rgba(120, 220, 170, 0.12);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(180, 255, 220, 0.9), rgba(60, 180, 120, 0.95));
+  border: 1px solid rgba(20, 90, 60, 0.9);
+  box-shadow: 0 0 8px rgba(80, 200, 140, 0.35);
+}
+
+input[type="range"]:focus {
+  outline: none;
+}
+
+/* ===== TRANSITION: zoom into relic screen ===== */
+body.is-booting #sceneLore {
+  animation: fadeOut 700ms ease forwards;
+}
+@keyframes fadeOut { to { opacity: 0; transform: scale(1.02); } }
+
+body.is-in-screen #sceneScreen {
+  display: grid;
+}
+
+body.is-in-screen #sceneScreen {
+  animation: bootIn 900ms ease forwards;
+}
+@keyframes bootIn {
+  from { opacity: 0; filter: blur(8px) contrast(120%); transform: scale(1.08); }
+  to   { opacity: 1; filter: blur(0) contrast(100%); transform: scale(1); }
+}
