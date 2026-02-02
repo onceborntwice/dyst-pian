@@ -10,6 +10,7 @@ const LINES = [
 // ====== AUDIO PLAYLIST ======
 const TRACKS = [
   { name: "7.7.7", src: "./assets/7.7.7.mp3" },
+  { name: "6.6.6", src: "./assets/6.6.6.mp3" },
 ];
 
 const loreLineEl = document.getElementById("loreLine");
@@ -121,12 +122,32 @@ function initAudio() {
 
   // when a track ends, auto-next
   player.addEventListener("ended", () => nextTrack());
+  player.addEventListener("error", () => {
+    const code = player.error?.code || 0;
+    const map = {
+      1: "Aborted",
+      2: "Network error",
+      3: "Decode error",
+      4: "Source not supported",
+    };
+    trackLabel.textContent = `Track failed to load (${map[code] || "Unknown"})`;
+    console.error("Audio error", code, player.error);
+    btnPlay.textContent = "▶︎";
+  });
+  player.addEventListener("canplay", () => {
+    // helpful for verifying load on track switch
+    console.log("Audio canplay:", player.src);
+  });
+  player.addEventListener("stalled", () => {
+    console.warn("Audio stalled:", player.src);
+  });
 }
 
 function setTrack(i) {
   currentTrackIndex = (i + TRACKS.length) % TRACKS.length;
   const t = TRACKS[currentTrackIndex];
   player.src = t.src;
+  player.load();
   trackLabel.textContent = t.name;
 }
 
