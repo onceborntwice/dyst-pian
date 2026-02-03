@@ -13,6 +13,7 @@ const FALLBACK_TRACKS = [
   { name: "6.6.6", src: "./assets/6.6.6.mp3" },
   { name: "5.5.5", src: "./assets/5.5.5.mp3" },
   { name: "4.4.4", src: "./assets/4.4.4.mp3" },
+  { name: "3.3.3", src: "./assets/3.3.3.mp3" },
 ];
 
 let TRACKS = [];
@@ -62,6 +63,7 @@ async function loadTracks() {
 
     if (TRACKS.length) {
       console.log("Discovered tracks (manifest):", TRACKS);
+      console.log("Track count:", TRACKS.length);
       currentTrackIndex = Math.floor(Math.random() * TRACKS.length);
       return;
     }
@@ -90,6 +92,7 @@ async function loadTracks() {
   }
 
   console.log("Discovered tracks:", TRACKS);
+  console.log("Track count:", TRACKS.length);
   currentTrackIndex = Math.floor(Math.random() * TRACKS.length);
 }
 
