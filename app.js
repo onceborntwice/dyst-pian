@@ -10,7 +10,7 @@ const LINES = [
 // ====== AUDIO PLAYLIST (auto-discovers mp3/wav in /assets/) ======
 const FALLBACK_TRACKS = [
   { name: "7.7.7", src: "./assets/7.7.7.mp3" },
-  { name: "6.6.6", src: "./assets/6.6.okay6.mp3" },
+  { name: "6.6.6", src: "./assets/6.6.6.mp3" },
   { name: "5.5.5", src: "./assets/5.5.5.mp3" },
   { name: "4.4.4", src: "./assets/4.4.4.mp3" },
 ];
@@ -161,8 +161,7 @@ relicBtn.addEventListener("click", async () => {
     // start animation + music AFTER user gesture (important: autoplay rules)
     resizeCanvas();
     startVoid();
-    await initAudio();
-    playCurrent();
+    initAudio().then(playCurrent);
   }, 700);
 });
 
