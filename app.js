@@ -7,11 +7,15 @@ const LINES = [
   "If you are reading this, the dystopian signal has already found you.",
 ];
 
-// ====== AUDIO PLAYLIST ======
-const TRACKS = [
+// ====== AUDIO PLAYLIST (auto-discovers mp3/wav in /assets/) ======
+const FALLBACK_TRACKS = [
   { name: "7.7.7", src: "./assets/7.7.7.mp3" },
-  { name: "6.6.6", src: "./assets/6.6.6.mp3" },
+  { name: "6.6.6", src: "./assets/6.6.okay6.mp3" },
+  { name: "5.5.5", src: "./assets/5.5.5.mp3" },
+  { name: "4.4.4", src: "./assets/4.4.4.mp3" },
 ];
+
+let TRACKS = [];
 
 const loreLineEl = document.getElementById("loreLine");
 const relicBtn = document.getElementById("relicBtn");
@@ -39,6 +43,55 @@ const ARCHIVE_COMPLETE_HOLD = 1200; // ms hold before fading "ARCHIVE COMPLETE."
 let lineIndex = 0;
 let charIndex = 0;
 let typingTimer = null;
+
+async function loadTracks() {
+  try {
+    // Preferred: explicit manifest (works on GitHub Pages)
+    const manifestRes = await fetch("./assets/tracks.json", { cache: "no-store" });
+    if (manifestRes.ok) {
+      const manifest = await manifestRes.json();
+      const list = Array.isArray(manifest) ? manifest : manifest.tracks;
+      if (Array.isArray(list) && list.length) {
+        TRACKS = list.map((t) => ({
+          name: t.name || t.src?.split("/").pop()?.replace(/\.[^/.]+$/, "") || "track",
+          src: t.src,
+        }));
+        TRACKS = TRACKS.filter((t) => t.src);
+      }
+    }
+
+    if (TRACKS.length) {
+      console.log("Discovered tracks (manifest):", TRACKS);
+      currentTrackIndex = Math.floor(Math.random() * TRACKS.length);
+      return;
+    }
+
+    const res = await fetch("./assets/");
+    if (!res.ok) throw new Error("assets listing not available");
+    const html = await res.text();
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const links = Array.from(doc.querySelectorAll("a"))
+      .map((a) => a.getAttribute("href"))
+      .filter(Boolean)
+      .map((href) => decodeURIComponent(href))
+      .filter((href) => !href.includes(".."));
+
+    const files = links.filter((href) => /\.(mp3|wav)$/i.test(href));
+    TRACKS = files
+      .map((file) => {
+        const name = file.replace(/\.[^/.]+$/, "");
+        return { name, src: `./assets/${encodeURIComponent(file)}` };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    if (!TRACKS.length) TRACKS = [...FALLBACK_TRACKS];
+  } catch (e) {
+    TRACKS = [...FALLBACK_TRACKS];
+  }
+
+  console.log("Discovered tracks:", TRACKS);
+  currentTrackIndex = Math.floor(Math.random() * TRACKS.length);
+}
 
 function setLoreText(text) {
   loreLineEl.innerHTML = `${text}<span class="cursor">▌</span>`;
@@ -94,7 +147,7 @@ setLoreText("");
 typeNextChar();
 
 // ====== Transition into screen + start everything ======
-relicBtn.addEventListener("click", () => {
+relicBtn.addEventListener("click", async () => {
   document.body.classList.add("is-booting");
 
   // delay to let lore scene fade
@@ -108,15 +161,16 @@ relicBtn.addEventListener("click", () => {
     // start animation + music AFTER user gesture (important: autoplay rules)
     resizeCanvas();
     startVoid();
-    initAudio();
+    await initAudio();
     playCurrent();
   }, 700);
 });
 
 // ====== Audio ======
-let currentTrackIndex = Math.floor(Math.random() * TRACKS.length);
+let currentTrackIndex = 0;
 
-function initAudio() {
+async function initAudio() {
+  await loadTracks();
   player.volume = Number(volSlider.value);
   setTrack(currentTrackIndex);
 
@@ -144,6 +198,7 @@ function initAudio() {
 }
 
 function setTrack(i) {
+  if (!TRACKS.length) return;
   currentTrackIndex = (i + TRACKS.length) % TRACKS.length;
   const t = TRACKS[currentTrackIndex];
   player.src = t.src;
@@ -178,11 +233,13 @@ function togglePlay() {
 }
 
 function nextTrack() {
+  if (!TRACKS.length) return;
   setTrack(currentTrackIndex + 1);
   playCurrent();
 }
 
 function prevTrack() {
+  if (!TRACKS.length) return;
   setTrack(currentTrackIndex - 1);
   playCurrent();
 }
