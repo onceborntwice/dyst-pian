@@ -15,8 +15,8 @@ const FALLBACK_TRACKS = [
   { name: "4.4.4", src: "./assets/4.4.4.mp3" },
   { name: "3.3.3", src: "./assets/3.3.3.mp3" },
   { name: "2.2.2", src: "./assets/2.2.2.mp3" },
+  { name: "1.1.1", src: "./assets/1.1.1.mp3" },
 ];
-
 let TRACKS = [];
 
 const loreLineEl = document.getElementById("loreLine");
