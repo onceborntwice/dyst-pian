@@ -14,6 +14,7 @@ const FALLBACK_TRACKS = [
   { name: "5.5.5", src: "./assets/5.5.5.mp3" },
   { name: "4.4.4", src: "./assets/4.4.4.mp3" },
   { name: "3.3.3", src: "./assets/3.3.3.mp3" },
+  { name: "2.2.2", src: "./assets/2.2.2.mp3" },
 ];
 
 let TRACKS = [];
