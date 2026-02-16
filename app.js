@@ -153,7 +153,6 @@ typeNextChar();
 // ====== Transition into screen + start everything ======
 relicBtn.addEventListener("click", async () => {
   document.body.classList.add("is-booting");
-  document.body.classList.add("bg-fade");
 
   // delay to let lore scene fade
   setTimeout(() => {
