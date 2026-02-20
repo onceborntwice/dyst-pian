@@ -126,6 +126,7 @@ body {
   position: relative;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
 }
 
 .screen__video {
@@ -154,6 +155,7 @@ body {
   left: 18px;
   right: 18px;
   bottom: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
   z-index: 2;
   display: grid;
   grid-template-columns: 220px 1fr 220px;
@@ -276,4 +278,83 @@ body.is-in-screen #sceneScreen {
 @keyframes bootIn {
   from { opacity: 0; filter: blur(8px) contrast(120%); transform: scale(1.08); }
   to   { opacity: 1; filter: blur(0) contrast(100%); transform: scale(1); }
+}
+
+@media (max-width: 900px) {
+  .relic__img {
+    width: min(62vw, 360px);
+    height: min(62vw, 360px);
+  }
+}
+
+@media (max-width: 680px) {
+  .scene--lore {
+    padding: 18px;
+  }
+
+  .lore {
+    width: min(92vw, 560px);
+    gap: 16px;
+  }
+
+  .lore__line {
+    min-height: 72px;
+    font-size: clamp(15px, 4.2vw, 18px);
+    line-height: 1.55;
+  }
+
+  .relic__img {
+    width: min(72vw, 300px);
+    height: min(72vw, 300px);
+  }
+
+  .relic__hint {
+    font-size: 13px;
+  }
+
+  .hud {
+    left: 10px;
+    right: 10px;
+    gap: 10px;
+    padding: 10px 12px;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "mid"
+      "left"
+      "right";
+  }
+
+  .hud__left {
+    grid-area: left;
+    justify-content: center;
+  }
+
+  .hud__mid {
+    grid-area: mid;
+  }
+
+  .hud__right {
+    grid-area: right;
+    justify-content: center;
+  }
+
+  .track {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+
+  .hud__btn {
+    min-width: 52px;
+    height: 44px;
+  }
+
+  .vol {
+    width: 100%;
+    justify-content: center;
+    margin-left: 0;
+  }
+
+  input[type="range"] {
+    width: min(62vw, 260px);
+  }
 }
