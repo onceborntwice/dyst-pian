@@ -186,9 +186,16 @@ body {
 }
 
 .hud__btn {
+  -webkit-appearance: none;
+  appearance: none;
+  display: grid;
+  place-items: center;
   height: 40px;
   min-width: 44px;
   padding: 0 12px;
+  font: inherit;
+  font-size: 20px;
+  line-height: 1;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(255,255,255,0.06);
@@ -336,25 +343,31 @@ body.is-in-screen #sceneScreen {
   .hud__right {
     grid-area: right;
     justify-content: center;
-  }
-
-  .track {
-    font-size: 11px;
-    letter-spacing: 0.5px;
+    width: 100%;
   }
 
   .hud__btn {
-    min-width: 52px;
-    height: 44px;
+    height: 36px;
+    min-width: 40px;
+    padding: 0 10px;
+    font-size: 18px;
   }
 
   .vol {
-    width: 100%;
-    justify-content: center;
     margin-left: 0;
+    margin-inline: auto;
+    width: min(100%, 360px);
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    align-items: center;
+    column-gap: 10px;
+  }
+
+  .vol__label {
+    text-align: center;
   }
 
   input[type="range"] {
-    width: min(62vw, 260px);
+    width: 100%;
   }
 }

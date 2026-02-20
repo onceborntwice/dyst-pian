@@ -35,6 +35,19 @@ const btnNext = document.getElementById("btnNext");
 const volSlider = document.getElementById("volSlider");
 const trackLabel = document.getElementById("trackLabel");
 const bgVideo = document.getElementById("bgVideo");
+const ICON_PREV = "\u23EE\uFE0E";
+const ICON_PLAY = "\u25B6\uFE0E";
+const ICON_PAUSE = "\u23F8\uFE0E";
+const ICON_NEXT = "\u23ED\uFE0E";
+
+let audioContext = null;
+let mediaSourceNode = null;
+let gainNode = null;
+let usingWebAudioGain = false;
+
+btnPrev.textContent = ICON_PREV;
+btnPlay.textContent = ICON_PLAY;
+btnNext.textContent = ICON_NEXT;
 
 // ====== Typewriter (line-by-line, fade between) ======
 const TYPE_SPEED = 32;        // ms per character
@@ -174,7 +187,8 @@ let currentTrackIndex = 0;
 
 async function initAudio() {
   await loadTracks();
-  player.volume = Number(volSlider.value);
+  setupAudioGraph();
+  setVolume(Number(volSlider.value));
   setTrack(currentTrackIndex);
 
   // when a track ends, auto-next
@@ -189,7 +203,7 @@ async function initAudio() {
     };
     trackLabel.textContent = `Track failed to load (${map[code] || "Unknown"})`;
     console.error("Audio error", code, player.error);
-    btnPlay.textContent = "▶︎";
+    btnPlay.textContent = ICON_PLAY;
   });
   player.addEventListener("canplay", () => {
     // helpful for verifying load on track switch
@@ -198,6 +212,33 @@ async function initAudio() {
   player.addEventListener("stalled", () => {
     console.warn("Audio stalled:", player.src);
   });
+}
+
+function setupAudioGraph() {
+  if (audioContext || typeof window === "undefined") return;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return;
+
+  try {
+    audioContext = new AudioCtx();
+    mediaSourceNode = audioContext.createMediaElementSource(player);
+    gainNode = audioContext.createGain();
+    mediaSourceNode.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    usingWebAudioGain = true;
+  } catch (e) {
+    usingWebAudioGain = false;
+    console.warn("Web Audio gain setup unavailable; falling back to media volume.");
+  }
+}
+
+function setVolume(value) {
+  const v = Math.max(0, Math.min(1, Number(value)));
+  if (usingWebAudioGain && gainNode) {
+    gainNode.gain.value = v;
+    return;
+  }
+  player.volume = v;
 }
 
 function setTrack(i) {
@@ -211,8 +252,11 @@ function setTrack(i) {
 
 async function playCurrent() {
   try {
+    if (audioContext && audioContext.state === "suspended") {
+      await audioContext.resume();
+    }
     await player.play();
-    btnPlay.textContent = "⏸";
+    btnPlay.textContent = ICON_PAUSE;
     if (bgVideo) {
       try {
         await bgVideo.play();
@@ -222,7 +266,7 @@ async function playCurrent() {
     }
   } catch (e) {
     // If browser blocks, user can press play manually
-    btnPlay.textContent = "▶︎";
+    btnPlay.textContent = ICON_PLAY;
   }
 }
 
@@ -230,7 +274,7 @@ function togglePlay() {
   if (player.paused) playCurrent();
   else {
     player.pause();
-    btnPlay.textContent = "▶︎";
+    btnPlay.textContent = ICON_PLAY;
     if (bgVideo) bgVideo.pause();
   }
 }
@@ -252,7 +296,11 @@ btnPlay.addEventListener("click", togglePlay);
 btnNext.addEventListener("click", nextTrack);
 
 volSlider.addEventListener("input", (e) => {
-  player.volume = Number(e.target.value);
+  setVolume(e.target.value);
+});
+
+volSlider.addEventListener("change", (e) => {
+  setVolume(e.target.value);
 });
 
 // Spacebar toggles play/pause (ignore when typing or using inputs)
