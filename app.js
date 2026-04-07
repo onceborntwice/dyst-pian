@@ -1,6 +1,6 @@
 // ====== LORE LINES ======
 const LINES = [
-  "The year is 2199.",
+  "The year is 2099.",
   "A relic was recovered from cold machinery — still warm with eros and evil.",
   "The relic says it was twice born; once in flesh, once in code.",
   "Ren(ai)ssance protocols failed. Nine lives in the machine remain unaccounted for.",
